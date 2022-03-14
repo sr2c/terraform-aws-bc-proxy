@@ -55,3 +55,40 @@ resource "aws_cloudfront_distribution" "this" {
 
   tags = module.this.tags
 }
+
+resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
+  alarm_name = "bandwidth-out-high-${var.origin_domain}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "1"
+  metric_name = "BytesDownloaded"
+  namespace = "AWS/CloudFront"
+  period = "3600"
+  statistic = "Sum"
+  threshold = var.max_transfer_per_hour
+  alarm_description = "Alerts when bandwidth out exceeds specified threshold"
+  actions_enabled = "true"
+  alarm_actions = [var.sns_topic_arn]
+  dimensions = {
+    DistributionId = aws_cloudfront_distribution.this.id
+  }
+
+  tags = module.this.tags
+}
+
+resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
+  alarm_name = "bandwidth-out-low-${var.origin_domain}"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods = "6"
+  metric_name = "BytesDownloaded"
+  namespace = "AWS/CloudFront"
+  period = "3600"
+  statistic = "Sum"
+  threshold = "0"
+  actions_enabled = "true"
+  alarm_actions = [var.sns_topic_arn]
+  dimensions = {
+    DistributionId = aws_cloudfront_distribution.this.id
+  }
+
+  tags = module.this.tags
+}
