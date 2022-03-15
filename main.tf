@@ -70,6 +70,7 @@ resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
   alarm_actions = [var.sns_topic_arn]
   dimensions = {
     DistributionId = aws_cloudfront_distribution.this.id
+    Region = "Global"
   }
 
   tags = module.this.tags
@@ -91,6 +92,7 @@ resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
   treat_missing_data = "breaching"
   dimensions = {
     DistributionId = aws_cloudfront_distribution.this.id
+    Region = "Global"
   }
 
   tags = module.this.tags
