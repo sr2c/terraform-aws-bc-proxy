@@ -65,7 +65,7 @@ resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
   period = "3600"
   statistic = "Sum"
   threshold = var.max_transfer_per_hour
-  alarm_description = "Alerts when bandwidth out exceeds specified threshold"
+  alarm_description = "Alerts when bandwidth out exceeds specified threshold in an hour"
   actions_enabled = "true"
   alarm_actions = [var.sns_topic_arn]
   dimensions = {
@@ -84,8 +84,10 @@ resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
   period = "3600"
   statistic = "Sum"
   threshold = "0"
+  alarm_description = "Alerts when bandwidth out is zero for six hours"
   actions_enabled = "true"
   alarm_actions = [var.sns_topic_arn]
+  treat_missing_data = "breaching"
   dimensions = {
     DistributionId = aws_cloudfront_distribution.this.id
   }
