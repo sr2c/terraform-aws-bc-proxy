@@ -76,6 +76,7 @@ resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
+  count = var.low_bandwidth_alarm ? 1 : 0
   alarm_name = "bandwidth-out-low-${var.origin_domain}"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods = "6"

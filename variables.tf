@@ -20,3 +20,9 @@ variable "sns_topic_arn" {
   default = null
   description = "The ARN of an SNS topic to send notifications to."
 }
+
+variable "low_bandwidth_alarm" {
+  type = bool
+  default = true
+  description = "Whether the low bandwidth alarm should be created."
+}
