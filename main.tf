@@ -57,7 +57,7 @@ resource "aws_cloudfront_distribution" "this" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
-  alarm_name = "bandwidth-out-high-${var.origin_domain}"
+  alarm_name = "bandwidth-out-high-${aws_cloudfront_distribution.this.id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name = "BytesDownloaded"
@@ -78,7 +78,7 @@ resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
 
 resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
   count = var.low_bandwidth_alarm ? 1 : 0
-  alarm_name = "bandwidth-out-low-${var.origin_domain}"
+  alarm_name = "bandwidth-out-low-${aws_cloudfront_distribution.this.id}"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods = "6"
   metric_name = "BytesDownloaded"
