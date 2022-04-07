@@ -17,6 +17,12 @@ resource "aws_cloudfront_distribution" "this" {
       origin_protocol_policy = "match-viewer"
       origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
     }
+
+    dynamic "custom_header" {
+      foreach = var.bypass_token == null ? [] : [0]
+      name = "Bypass-Rate-Limit-Token"
+      value = var.bypass_token
+    }
   }
 
   restrictions {
@@ -97,3 +103,4 @@ resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
 
   tags = module.this.tags
 }
+

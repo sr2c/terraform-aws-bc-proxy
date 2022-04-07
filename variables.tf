@@ -3,6 +3,12 @@ variable "origin_domain" {
   description = "The URL for the origin server."
 }
 
+variable "bypass_token" {
+  type = string
+  default = null
+  description = "A value to set for a Bypass-Rate-Limit-Token header to be sent to the origin with all requests."
+}
+
 variable "logging_bucket" {
   type = string
   default = null
