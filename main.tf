@@ -19,9 +19,11 @@ resource "aws_cloudfront_distribution" "this" {
     }
 
     dynamic "custom_header" {
-      foreach = var.bypass_token == null ? [] : [0]
-      name = "Bypass-Rate-Limit-Token"
-      value = var.bypass_token
+      for_each = var.bypass_token == null ? [] : [0]
+      content {
+        name = "Bypass-Rate-Limit-Token"
+        value = var.bypass_token
+      }
     }
   }
 
