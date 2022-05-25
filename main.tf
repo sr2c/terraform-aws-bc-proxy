@@ -1,4 +1,6 @@
-
+data "aws_cloudfront_response_headers_policy" "cors_with_preflight" {
+  name = "CORS-With-Preflight"
+}
 resource "aws_cloudfront_distribution" "this" {
   comment = "CDN for ${var.origin_domain}"
   enabled = true
@@ -34,7 +36,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   default_cache_behavior {
-    allowed_methods        = ["GET", "HEAD", "POST", "OPTIONS"]
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "Custom-${var.origin_domain}"
     viewer_protocol_policy = "redirect-to-https"
@@ -48,8 +50,7 @@ resource "aws_cloudfront_distribution" "this" {
       }
     }
 
-    # CORS-with-preflight
-    response_headers_policy_id = "5cc3b908-e619-4b99-88e5-2cf7f45965bd"
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.cors_with_preflight
   }
 
   viewer_certificate {
