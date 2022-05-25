@@ -1,6 +1,3 @@
-data "aws_cloudfront_response_headers_policy" "cors_with_preflight" {
-  name = "CORS-With-Preflight"
-}
 resource "aws_cloudfront_distribution" "this" {
   comment = "CDN for ${var.origin_domain}"
   enabled = true
@@ -49,8 +46,6 @@ resource "aws_cloudfront_distribution" "this" {
         whitelisted_names = []
       }
     }
-
-    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.cors_with_preflight
   }
 
   viewer_certificate {
