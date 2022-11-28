@@ -1,26 +1,26 @@
 resource "aws_cloudfront_distribution" "this" {
-  comment = "CDN for ${var.origin_domain}"
-  enabled = true
+  comment         = "CDN for ${var.origin_domain}"
+  enabled         = true
   is_ipv6_enabled = true
 
   origin {
-    domain_name = var.origin_domain
-    origin_id   = "Custom-${var.origin_domain}"
+    domain_name         = var.origin_domain
+    origin_id           = "Custom-${var.origin_domain}"
     connection_attempts = 3
-    connection_timeout = 10
+    connection_timeout  = 10
 
     custom_origin_config {
-      http_port              = 80
-      https_port             = 443
+      http_port                = 80
+      https_port               = 443
       origin_keepalive_timeout = 5
-      origin_protocol_policy = "match-viewer"
-      origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+      origin_protocol_policy   = "match-viewer"
+      origin_ssl_protocols     = ["TLSv1", "TLSv1.1", "TLSv1.2"]
     }
 
     dynamic "custom_header" {
       for_each = var.bypass_token == null ? [] : [0]
       content {
-        name = "Bypass-Rate-Limit-Token"
+        name  = "Bypass-Rate-Limit-Token"
         value = var.bypass_token
       }
     }
@@ -39,10 +39,10 @@ resource "aws_cloudfront_distribution" "this" {
     viewer_protocol_policy = "redirect-to-https"
 
     forwarded_values {
-      headers = []
+      headers      = []
       query_string = true
       cookies {
-        forward = "none"
+        forward           = "none"
         whitelisted_names = []
       }
     }
@@ -55,7 +55,7 @@ resource "aws_cloudfront_distribution" "this" {
   dynamic "logging_config" {
     for_each = var.logging_bucket == null ? [] : [1]
     content {
-      bucket = var.logging_bucket
+      bucket          = var.logging_bucket
       include_cookies = false
     }
   }
@@ -64,42 +64,42 @@ resource "aws_cloudfront_distribution" "this" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "high_bandwidth" {
-  alarm_name = "bandwidth-out-high-${aws_cloudfront_distribution.this.id}"
+  alarm_name          = "bandwidth-out-high-${aws_cloudfront_distribution.this.id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name = "BytesDownloaded"
-  namespace = "AWS/CloudFront"
-  period = "3600"
-  statistic = "Sum"
-  threshold = var.max_transfer_per_hour
-  alarm_description = "Alerts when bandwidth out exceeds specified threshold in an hour"
-  actions_enabled = "true"
-  alarm_actions = [var.sns_topic_arn]
+  metric_name         = "BytesDownloaded"
+  namespace           = "AWS/CloudFront"
+  period              = "3600"
+  statistic           = "Sum"
+  threshold           = var.max_transfer_per_hour
+  alarm_description   = "Alerts when bandwidth out exceeds specified threshold in an hour"
+  actions_enabled     = "true"
+  alarm_actions       = [var.sns_topic_arn]
   dimensions = {
     DistributionId = aws_cloudfront_distribution.this.id
-    Region = "Global"
+    Region         = "Global"
   }
 
   tags = module.this.tags
 }
 
 resource "aws_cloudwatch_metric_alarm" "low_bandwidth" {
-  count = var.low_bandwidth_alarm ? 1 : 0
-  alarm_name = "bandwidth-out-low-${aws_cloudfront_distribution.this.id}"
+  count               = var.low_bandwidth_alarm ? 1 : 0
+  alarm_name          = "bandwidth-out-low-${aws_cloudfront_distribution.this.id}"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods = "6"
-  metric_name = "BytesDownloaded"
-  namespace = "AWS/CloudFront"
-  period = "3600"
-  statistic = "Sum"
-  threshold = "0"
-  alarm_description = "Alerts when bandwidth out is zero for six hours"
-  actions_enabled = "true"
-  alarm_actions = [var.sns_topic_arn]
-  treat_missing_data = "breaching"
+  evaluation_periods  = "6"
+  metric_name         = "BytesDownloaded"
+  namespace           = "AWS/CloudFront"
+  period              = "3600"
+  statistic           = "Sum"
+  threshold           = "0"
+  alarm_description   = "Alerts when bandwidth out is zero for six hours"
+  actions_enabled     = "true"
+  alarm_actions       = [var.sns_topic_arn]
+  treat_missing_data  = "breaching"
   dimensions = {
     DistributionId = aws_cloudfront_distribution.this.id
-    Region = "Global"
+    Region         = "Global"
   }
 
   tags = module.this.tags

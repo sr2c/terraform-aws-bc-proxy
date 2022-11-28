@@ -1,0 +1,43 @@
+---
+name: terraform-aws-bc-proxy
+tags:
+  - aws
+  - terraform
+  - cloudfront
+categories:
+  - terraform-modules/supported
+license: BSD2
+gitlab_repo: sr2c/terraform-aws-bc-proxy
+description: |-
+  Deploy a Beyond Censorship proxy to AWS (using CloudFront).
+usage: |-
+  ### Simple Example
+
+  ```hcl
+  terraform {
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+      }
+    }
+  }
+  
+  provider "aws" {
+    region = "us-east-2"
+  }
+  
+  module "proxy" {
+    source = "sr2c/bc-proxy/aws"
+    namespace = "<yourorg>"
+    name = "proxy"
+    attributes = ["example.com"]
+    origin_domain = "example.com"
+  }
+  ```
+include:
+  - docs/terraform.md
+  - docs/targets.md
+contributors:
+  - name: irl
+    gitlab: irlxyz
+    gitlab_id: 5895869
